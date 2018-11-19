@@ -190,9 +190,9 @@ print(type(data_array))
 
 ####Introduction to relational databases
 ##Creating a database engine
-from sqlalchemy import create_engine
-import pandas as pd
-engine = create_engine('sqlite:///Chinook.sqlite')
+# from sqlalchemy import create_engine
+# import pandas as pd
+# engine = create_engine('sqlite:///Chinook.sqlite')
 # print(engine.table_names())
 # con = engine.connect()
 # re = con.execute('select * from album')
@@ -213,42 +213,197 @@ engine = create_engine('sqlite:///Chinook.sqlite')
 
 ####Querying relational databases directly with pandas
 # Execute query and store records in DataFrame: df
-df = pd.read_sql_query("SELECT * FROM Album", engine)
-# Print head of DataFrame
-print(df.head())
-# Open engine in context manager and store query result in df1
-with engine.connect() as con:
-    rs = con.execute("SELECT * FROM Album")
-    df1 = pd.DataFrame(rs.fetchall())
-    df1.columns = rs.keys()
-# Confirm that both methods yield the same result
-print(df.equals(df1))
+# df = pd.read_sql_query("SELECT * FROM Album", engine)
+# # Print head of DataFrame
+# print(df.head())
+# # Open engine in context manager and store query result in df1
+# with engine.connect() as con:
+#     rs = con.execute("SELECT * FROM Album")
+#     df1 = pd.DataFrame(rs.fetchall())
+#     df1.columns = rs.keys()
+# # Confirm that both methods yield the same result
+# print(df.equals(df1))
 
 ##Pandas for more complex querying
-df2 = pd.read_sql_query(
-    "SELECT * FROM Employee WHERE EmployeeId >= 6 ORDER BY BirthDate",
-    engine)
-print(df2.head())
+# df2 = pd.read_sql_query(
+#     "SELECT * FROM Employee WHERE EmployeeId >= 6 ORDER BY BirthDate",
+#     engine)
+# print(df2.head())
+#
+# ##The power of SQL lies in relationships between tables: INNER JOIN
+# with engine.connect() as con:
+#     rs1 = con.execute("SELECT Title, Name FROM Album INNER JOIN Artist on Album.ArtistID = Artist.ArtistID")
+#     df4 = pd.DataFrame(rs1.fetchall())
+#     df4.columns = rs1.keys()
+# # Print head of DataFrame df
+# print(df4.head())
+#
+# ##Filtering your INNER JOIN
+# df5 = pd.read_sql_query(
+#     "SELECT * FROM PlaylistTrack INNER JOIN Track ON PlaylistTrack.TrackId = Track.TrackId WHERE Milliseconds < 250000",
+#     engine
+# )
+# # Print head of DataFrame
+# print(df5.head())
 
-##The power of SQL lies in relationships between tables: INNER JOIN
-with engine.connect() as con:
-    rs1 = con.execute("SELECT Title, Name FROM Album INNER JOIN Artist on Album.ArtistID = Artist.ArtistID")
-    df4 = pd.DataFrame(rs1.fetchall())
-    df4.columns = rs1.keys()
-# Print head of DataFrame df
-print(df4.head())
 
-##Filtering your INNER JOIN
-df5 = pd.read_sql_query(
-    "SELECT * FROM PlaylistTrack INNER JOIN Track ON PlaylistTrack.TrackId = Track.TrackId WHERE Milliseconds < 250000",
-    engine
-)
+####Importing flat files from the web
+# from urllib.request import urlretrieve
+# import matplotlib.pyplot as plt
+# import pandas as pd
+# url = 'https://s3.amazonaws.com/assets.datacamp.com/production/course_1606/datasets/winequality-red.csv'
+# # urlretrieve(url,'winequality-red.csv')
+# # df = pd.read_csv('winequality-red.csv',sep=';')
+# # print(df.head())
+# ##Opening and reading flat files from the web
+# df = pd.read_csv(url,sep=';')
+# print(df.head())
+# #plot first column of df
+# pd.DataFrame.hist(df.ix[:,0:1])
+# plt.xlabel('fixed acidity (g(tartaric acid)/dm$^3$')
+# plt.ylabel('count')
+# plt.show()
+# print(df.columns)
+
+##Importing non-flat files from the web xls
+# url = 'http://s3.amazonaws.com/assets.datacamp.com/course/importing_data_into_r/latitude.xls'
+# x1 = pd.read_excel(url,sheet_name=None)
+# #print the sheetname to the shell
+# print(x1.keys())
+# #print the head of the firs sheet(using its name ,NOT its index
+# print(x1['1700'].head())
+
+####Performing HTTP requests in Python using urllib
+# from urllib.request import urlopen,Request
+# url = "http://www.datacamp.com/teach/documentation"
+# request = Request(url)
+# #Sends the request and catches the response
+# response = urlopen(request)
+# print(type(response))
+# html = response.read()
+# print(html)
+# response.close()
+
+####Performing HTTP requests in Python using requests
+# import requests
+# url = "http://www.datacamp.com/teach/documentation"
+# r = requests.get(url)
+# text = r.text
+# print(text)
+
+####Parsing HTML with BeautifulSoup
+# import requests
+# from bs4 import BeautifulSoup
+# url = 'https://www.python.org/~guido/'
+# r = requests.get(url)
+# html_doc = r.text
+# soup = BeautifulSoup(html_doc)
+# pretty_soup = BeautifulSoup.prettify(soup)
+# #print(pretty_soup)
+# # Get the title of Guido's webpage: guido_title
+# guido_title = soup.title
+# #print(guido_title)
+# guido_text = soup.get_text()
+# #print(guido_text)
+# # Find all 'a' tags (which define hyperlinks): a_tags
+# a_tags = soup.find_all('a')
+# #print the urls to the shel
+# for link in a_tags:
+#     print(link.get('href'))
+
+####Introduction to APIs and JSONs
+##Loading and exploring a JSON
+#load JSON:json_data
+# import json
+# with open('a_movie.json') as json_file:
+#     json_data = json.load(json_file)
+# #print each key-value pair in json_data
+# for k in json_data.keys():
+#     print(k +":",json_data[k])
+
+####API requests
+##http://www.omdbapi.com/
+import requests
+import json
+# Assign URL to variable: url
+# url = 'http://www.omdbapi.com/?apikey=ff21610b&t=the+social+network'
+# r = requests.get(url)
+# #print(r.text)
+# json_data = r.json()
+# for k in json_data.keys():
+#     print(k + ":" ,json_data[k])
+
+##Checking out the Wikipedia API
+# Assign URL to variable: url
+# url ='https://en.wikipedia.org/w/api.php?action=query&prop=extracts&format=json&exintro=&titles=pizza'
+# # Package the request, send the request and catch the response: r
+# r = requests.get(url)
+# # Decode the JSON data into a dictionary: json_data
+# json_data = r.json()
+# # Print the Wikipedia page extract
+# pizza_extract = json_data['query']['pages']['24768']['extract']
+# print(pizza_extract)
+
+
+# Import package
+import tweepy
+import MyStreamListener
+# Store OAuth authentication credentials in relevant variables
+access_token = "1092294848-aHN7DcRP9B4VMTQIhwqOYiB14YkW92fFO8k8EPy"
+access_token_secret = "X4dHmhPfaksHcQ7SCbmZa2oYBBVSD2g8uIHXsp5CTaksx"
+consumer_key = "nZ6EA0FxZ293SxGNg8g8aP0HM"
+consumer_secret = "fJGEodwe3KiKUnsYJC3VRndj7jevVvXbK2D5EiJ2nehafRgA6i"
+# Pass OAuth details to tweepy's OAuth handler
+auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+auth.set_access_token(access_token, access_token_secret)
+# Initialize Stream listener
+l = MyStreamListener()
+# Create your Stream object with authentication
+stream = tweepy.Stream(auth, l)
+# Filter Twitter Streams to capture data by the keywords:
+stream.filter(track=['clinton', 'trump', 'sanders', 'cruz'])
+##Load and explore your Twitter data
+# Import package
+import json
+# String of path to file: tweets_data_path
+tweets_data_path = 'tweets.txt'
+# Initialize empty list to store tweets: tweets_data
+tweets_data = []
+# Open connection to file
+tweets_file = open(tweets_data_path, "r")
+# Read in tweets and store in list: tweets_data
+for line in tweets_file:
+    tweet = json.loads(line)
+    tweets_data.append(tweet)
+# Close connection to file
+tweets_file.close()
+# Print the keys of the first tweet dict
+print(tweets_data[0].keys())
+# Import package
+import pandas as pd
+# Build DataFrame of tweet texts and languages
+df = pd.DataFrame(tweets_data, columns=['text', 'lang'])
 # Print head of DataFrame
-print(df5.head())
-
-
-
-
-
-
-
+print(df.head())
+##A little bit of Twitter text analysis
+# Initialize list to store tweet counts
+[clinton, trump, sanders, cruz] = [0, 0, 0, 0]
+# Iterate through df, counting the number of tweets in which
+# each candidate is mentioned
+for index, row in df.iterrows():
+    clinton += word_in_text('clinton', row['text'])
+    trump += word_in_text('trump', row['text'])
+    sanders += word_in_text('sanders', row['text'])
+    cruz += word_in_text('cruz', row['text'])
+##Plotting your Twitter data
+# Import packages
+import matplotlib.pyplot as plt
+import seaborn as sns
+# Set seaborn style
+sns.set(color_codes=True)
+# Create a list of labels:cd
+cd = ['clinton', 'trump', 'sanders', 'cruz']
+# Plot histogram
+ax = sns.barplot(cd, [clinton, trump, sanders, cruz])
+ax.set(ylabel="count")
+plt.show()
